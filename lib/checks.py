@@ -124,10 +124,8 @@ def run_checks(answer, checkers):
         ctype = spec.get("type")
         base = {"type": ctype, "name": ctype}
         if ctype == "exact":
-            want = spec["value"]
-            got = answer
-            if spec.get("strip", True):
-                want, got = want.strip(), got.strip()
+            want = normalize(spec["value"])
+            got = normalize(answer)
             if not spec.get("case_sensitive", False):
                 want, got = want.lower(), got.lower()
             base.update(passed=got == want, observed=got, expected=want)

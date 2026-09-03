@@ -31,6 +31,7 @@ def run_one(model, task, base_url, judge_model, judge_enabled, client):
         result = {
             "id": tid,
             "passed": all(c["passed"] for c in checks) and bool(checks),
+            "truncated": resp.get("finish_reason") == "length",
             "checks": checks,
             "latency_s": round(lat, 3),
             "prompt_tokens": resp["usage"]["prompt_tokens"],

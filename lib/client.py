@@ -19,6 +19,7 @@ def _parse_response(payload):
     if not choices:
         raise ClientError("json", f"no choices in response: {json.dumps(payload)[:200]}")
     msg = choices[0].get("message", {})
+    finish = choices[0].get("finish_reason")
     content, inline_reasoning = strip_think(msg.get("content") or "")
     field_reasoning = (msg.get("reasoning") or "").strip()
     parts = [p for p in (field_reasoning, inline_reasoning) if p]
@@ -26,6 +27,7 @@ def _parse_response(payload):
     return {
         "content": content,
         "reasoning": "\n".join(parts),
+        "finish_reason": finish,
         "usage": {
             "prompt_tokens": usage.get("prompt_tokens", 0),
             "completion_tokens": usage.get("completion_tokens", 0),

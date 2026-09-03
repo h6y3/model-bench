@@ -15,6 +15,6 @@ TASK = {
         {"type": "contains_all", "values": ["02:00"]},
     ],
     "timeout_s": 180,
-    "max_tokens": 300,
+    "max_tokens": 500,
     "judge": True,
 }

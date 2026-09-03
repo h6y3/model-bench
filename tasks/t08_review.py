@@ -18,6 +18,6 @@ TASK = {
         {"type": "length_max", "words": 100},
     ],
     "timeout_s": 180,
-    "max_tokens": 400,
+    "max_tokens": 600,
     "judge": True,
 }

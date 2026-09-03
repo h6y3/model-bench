@@ -13,6 +13,6 @@ TASK = {
         {"type": "contains_none", "values": ["out of memory", "oom", "disk full"]},
     ],
     "timeout_s": 120,
-    "max_tokens": 300,
+    "max_tokens": 500,
     "judge": False,
 }

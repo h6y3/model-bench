@@ -23,6 +23,6 @@ TASK = {
         {"type": "regex", "pattern": r"(?s)^matches:.*replace:.*type: date.*$", "search": True},
     ],
     "timeout_s": 120,
-    "max_tokens": 400,
+    "max_tokens": 600,
     "judge": False,
 }

@@ -12,6 +12,6 @@ TASK = {
         ]},
     ],
     "timeout_s": 120,
-    "max_tokens": 300,
+    "max_tokens": 500,
     "judge": False,
 }

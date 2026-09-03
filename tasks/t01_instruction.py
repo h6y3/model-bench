@@ -7,6 +7,6 @@ TASK = {
         {"type": "exact", "value": "OK BANANA"},
     ],
     "timeout_s": 60,
-    "max_tokens": 100,
+    "max_tokens": 500,
     "judge": False,
 }
