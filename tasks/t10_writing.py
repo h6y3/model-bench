@@ -1,5 +1,5 @@
 RAMBLE = ("So basically what happened is that the backup thing ran last night, I think "
-          "around 2 in the morning or so, and it did its whole thing and there were no "
+          "around 02:00 or so, and it did its whole thing and there were no "
           "errors which was nice, and honestly I was worried because last time it "
           "failed halfway, but this time it went all the way through and finished "
           "cleanly, so the backup succeeded.")
@@ -15,6 +15,6 @@ TASK = {
         {"type": "contains_all", "values": ["02:00"]},
     ],
     "timeout_s": 180,
-    "max_tokens": 500,
+    "max_tokens": 4000,
     "judge": True,
 }

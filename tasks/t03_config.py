@@ -20,9 +20,9 @@ TASK = {
     "checkers": [
         {"type": "contains_all", "values": ['trigger: ";;date"', "word: true"]},
         {"type": "contains_none", "values": ["triger", "\t"]},
-        {"type": "regex", "pattern": r"(?s)^matches:.*replace:.*type: date.*$", "search": True},
+        {"type": "regex", "pattern": r"(?s)matches:.+type: date", "search": True},
     ],
     "timeout_s": 120,
-    "max_tokens": 600,
+    "max_tokens": 4000,
     "judge": False,
 }

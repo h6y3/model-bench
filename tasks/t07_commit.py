@@ -16,6 +16,6 @@ TASK = {
         {"type": "contains_none", "values": ["\n"]},
     ],
     "timeout_s": 120,
-    "max_tokens": 500,
+    "max_tokens": 4000,
     "judge": False,
 }
