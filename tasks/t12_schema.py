@@ -1,10 +1,11 @@
-SNIPPET = ('models.json (one of eight models):\n'
+SNIPPET = ('models.json schema rule: the schema requires EVERY cost block to contain all four\n'
+           'keys — input, output, cacheRead, cacheWrite — and any schema error rejects the whole file.\n\n'
+           'models.json (one of eight models):\n'
            '"cost": { "input": 0.15, "output": 0.50, "cacheRead": 0.03 }\n'
            '\n'
            'settings.json: { "defaultModel": "glm-5.3-flash:cloud", "defaultProvider": "ollama" }\n'
            '\n'
-           'Symptom: unrelated Gemini 429 RESOURCE_EXHAUSTED quota errors, even though the '
-           'config never mentions Gemini.')
+           'Symptom: unrelated Gemini 429 RESOURCE_EXHAUSTED quota errors, even though the '\n           'config never mentions Gemini.')
 
 TASK = {
     "id": "T12",
