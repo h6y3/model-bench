@@ -5,6 +5,7 @@ RATES = {
     "glm-5.3-flash:cloud": {"in": 0.15, "out": 0.50},
     "glm-5.3:cloud": {"in": 1.40, "out": 4.40},
     "gemma4:31b:cloud": {"in": 0.10, "out": 0.40},  # approximate
+    "deepseek-v4-flash:cloud": {"in": 0.22, "out": 0.66},
 }
 
 

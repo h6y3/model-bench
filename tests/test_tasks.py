@@ -11,12 +11,12 @@ class TestTasks(unittest.TestCase):
     def setUp(self):
         self.tasks = load_tasks()
 
-    def test_ten_tasks(self):
-        self.assertEqual(len(self.tasks), 10)
+    def test_sixteen_tasks(self):
+        self.assertEqual(len(self.tasks), 16)
 
     def test_unique_ids_sequential(self):
         self.assertEqual([t["id"] for t in self.tasks],
-                         [f"T{i:02d}" for i in range(1, 11)])
+                         [f"T{i:02d}" for i in range(1, 17)])
 
     def test_required_keys(self):
         for t in self.tasks:
@@ -32,7 +32,7 @@ class TestTasks(unittest.TestCase):
 
     def test_judge_tasks(self):
         flagged = {t["id"] for t in self.tasks if t.get("judge")}
-        self.assertEqual(flagged, {"T06", "T08", "T10"})
+        self.assertEqual(flagged, {"T06", "T08", "T10", "T16"})
 
 
 if __name__ == "__main__":
