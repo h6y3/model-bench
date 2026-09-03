@@ -34,7 +34,7 @@ def judge_task(client, judge_model, task, answer):
         resp = client(judge_model, [
             {"role": "system", "content": JUDGE_SYSTEM},
             {"role": "user", "content": build_judge_prompt(task, answer)},
-        ], max_tokens=200, timeout_s=120)
+        ], max_tokens=2000, timeout_s=120)
         result = parse_judge(resp["content"])
         result["error"] = None
         return result
