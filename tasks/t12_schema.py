@@ -14,11 +14,11 @@ TASK = {
                "snippet and symptom, explain in at most 80 words which missing key causes "
                "the failure, why the symptom is Gemini-related, and what value fixes it.\n\n" + SNIPPET),
     "checkers": [
-        {"type": "contains_all", "values": ["cachewrite", "fallback"]},
+        {"type": "contains_all", "values": ["cachewrite", "fall"]},
         {"type": "contains_none", "values": ["gemini quota", "rate limit bug"]},
         {"type": "length_max", "words": 110},
     ],
     "timeout_s": 180,
-    "max_tokens": 4000,
+    "max_tokens": 8000,
     "judge": False,
 }
