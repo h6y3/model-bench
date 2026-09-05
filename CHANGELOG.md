@@ -4,6 +4,26 @@ All notable changes to model-bench are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning: [SemVer](https://semver.org/).
 
+## [0.3.0] - 2026-09-04
+
+### Added
+- T23, a voice-matching task. Every prior task states its rule in the prompt
+  -- which is exactly why T17-T22 were passed by all four models, including
+  the deliberately weak control: they measure careful reading, not
+  capability, and are kept as regression pins by this repo's own
+  negative-control doctrine. T23 states its convention only by example:
+  three short invented emails establish a register -- terse, answer first,
+  no closing phrase, bare first-name sign-off -- and the model must write a
+  fourth that matches it while carrying two supplied facts (Thursday; the
+  loading dock) and not inventing a third that was deliberately withheld
+  (no time of day is given). Inferring a convention from samples and holding
+  it while generating is a capability difference, not a reading-comprehension
+  one, so T23 should discriminate where T17-T22 could not.
+- The invention checker is the one that matters most: it mirrors a real
+  failure where a model fabricated a serial number into a draft addressed to
+  a third party over its owner's name. Here, a reply naming any time of day
+  fails, since none was ever supplied.
+
 ## [0.2.0] - 2026-09-04
 
 ### Added

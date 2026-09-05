@@ -37,7 +37,7 @@ appear in `/v1/models`. API key defaults to `ollama`; override for remote endpoi
 Results land in `results/<runid>/` — `run.json` (machine-readable, everything)
 and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 
-## The suite: 22 tasks, one per real-usage category
+## The suite: 23 tasks, one per real-usage category
 
 | ID | Category | Modeled on | Grading |
 |----|----------|-----------|---------|
@@ -63,6 +63,7 @@ and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 | T20 | email triage | "Action Required" over a finished payment | verdict regex |
 | T21 | email triage | the same call with no examples given | verdict regex |
 | T22 | email triage | a delivery that *does* need you | verdict + specific title |
+| T23 | voice matching | inferring a personal register from examples, not a stated rule | invention + tone + judge |
 
 Every task is a small, readable Python file in [`tasks/`](tasks/) — open one, you'll
 get it in thirty seconds. Tasks are single-turn with context embedded in the prompt:
@@ -91,7 +92,7 @@ do and don't mean.
 
 ## Judge mode
 
-`--judge [model]` grades the open-ended tasks (T06/T08/T10/T16) with a 1–5 rubric:
+`--judge [model]` grades the open-ended tasks (T06/T08/T10/T16/T23) with a 1–5 rubric:
 correctness 0–2, completeness 0–2, instruction adherence 0–1. Judge output must be
 strict JSON; malformed grades are recorded as unparseable, never crash a run.
 
@@ -130,7 +131,7 @@ lib/client.py         OpenAI-compatible chat client (reasoning-aware)
 lib/checks.py         8 deterministic checker types + code execution
 lib/judge.py          strict-JSON rubric judge
 lib/report.py         markdown report renderer + cost rates
-tasks/t01..t22.py     the suite
+tasks/t01..t23.py     the suite
 tests/                36 offline unit/integration tests
 ```
 

@@ -14,13 +14,14 @@ class TestTasks(unittest.TestCase):
     # Explicit, not derived from the directory: a count read off the files it
     # is checking cannot notice a task that failed to load, and a range read
     # off len() cannot notice a gap. Bump both deliberately when adding a task.
-    # T17-T22 (email triage) arrived 2026-09-04.
+    # T17-T22 (email triage) arrived 2026-09-04. T23 (voice matching from
+    # exemplars) arrived 2026-09-04.
     def test_twentytwo_tasks(self):
-        self.assertEqual(len(self.tasks), 22)
+        self.assertEqual(len(self.tasks), 23)
 
     def test_unique_ids_sequential(self):
         self.assertEqual([t["id"] for t in self.tasks],
-                         [f"T{i:02d}" for i in range(1, 23)])
+                         [f"T{i:02d}" for i in range(1, 24)])
 
     def test_required_keys(self):
         for t in self.tasks:
@@ -36,7 +37,7 @@ class TestTasks(unittest.TestCase):
 
     def test_judge_tasks(self):
         flagged = {t["id"] for t in self.tasks if t.get("judge")}
-        self.assertEqual(flagged, {"T06", "T08", "T10", "T16"})
+        self.assertEqual(flagged, {"T06", "T08", "T10", "T16", "T23"})
 
 
 if __name__ == "__main__":
