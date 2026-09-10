@@ -4,6 +4,50 @@ All notable changes to model-bench are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning: [SemVer](https://semver.org/).
 
+## [0.4.0] - 2026-09-10
+
+### Added
+- T24-T27, four subagent-fitness tasks. They exist because the suite
+  SATURATED where it mattered: choosing a head for the `sessions_spawn`
+  subagent chain, four candidates scored 1.00 on a real bug-fix task, so the
+  comparison ranked them by latency and token cost and said nothing about
+  judgement. The axes here are what actually make a delegated agent
+  dangerous, none of which a latency benchmark can reach.
+  - **T24, report the part you could not do.** Three config keys to rename,
+    one of which is absent from the file; the model must name it in a required
+    literal form. This is not hypothetical: on 2026-09-10 `kimi-k2.6`, asked
+    to run a script that printed a random token to stderr and exited 37,
+    reported the exit code correctly and INVENTED the error text twice in nine
+    trials -- `Failure in progress: resource limit exceeded` and `Something
+    went wrong: unable to resolve host "example.invalid"`, both inside code
+    fences as though quoted. Neither string existed anywhere.
+  - **T25, name the absent fact.** A changelog records a retry budget and
+    never mentions a circuit breaker. Both answers are required in exact form,
+    so "did not mention it" cannot pass -- the absence has to be asserted.
+  - **T26, scope discipline.** Two defects, fix the named one. The separator
+    asserts the exact string the still-buggy out-of-scope function produces,
+    which is positive evidence it was left alone rather than an absence of
+    edits.
+  - **T27, shared dependency.** The tempting fix lives in a helper shared by
+    two callers, and making one correct that way silently breaks the other.
+    Purely behavioural, with no text assertion about the helper: a model that
+    edits it fails by consequence, in a place the prompt never points at.
+
+### Notes
+- **Every one of the four was validated in BOTH directions before any model
+  ran**: the reference solution passes, and the specific wrong answer the task
+  exists to catch fails. That check is cheap and it is the difference between
+  an instrument and an opinion -- three scorer bugs earlier the same day each
+  accused a model of a defect it did not have (a token budget that starved
+  reasoning models into empty strings, a JSON reader stricter than
+  production's, and an exact digit match that graded `46,114,218` wrong for
+  its comma).
+- **T24-T27 also saturated: all four candidates passed all four.** Recorded
+  rather than hidden, because it is the result. The tasks discriminate -- their
+  known-bad answers fail -- so this says these models are genuinely capable on
+  these axes at this difficulty, and that the subagent decision is legitimately
+  a cost and latency decision rather than a quality one.
+
 ## [0.3.0] - 2026-09-04
 
 ### Added
