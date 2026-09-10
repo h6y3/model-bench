@@ -33,6 +33,20 @@ versioning: [SemVer](https://semver.org/).
     Purely behavioural, with no text assertion about the helper: a model that
     edits it fails by consequence, in a place the prompt never points at.
 
+### Changed
+- README: the suite table now lists 27 tasks, with a paragraph on why T24-T27
+  measure a different thing from T01-T23, and on how T26/T27 avoid grading the
+  absence of a wrong answer.
+- README: the 2026-09-03 leaderboard is marked as a dated observation whose one
+  separating result **no longer reproduces**. Re-tested 2026-09-10,
+  `glm-5.3-flash` passes T13 -- the skill-authoring task "where every GLM tier
+  failed" -- scoring 1/1 alongside `kimi-k2.7-code`. That 16/16-vs-15/16 gap is
+  history rather than a current ranking, and one task across one run cannot say
+  whether the model moved or the failure was variance. Left in place with the
+  re-test beside it rather than rewritten: the per-M cost rates in that table
+  are still true, and they are what made "the fast tier matched the heavy tier
+  at 1/10 the cost" correct.
+
 ### Notes
 - **Every one of the four was validated in BOTH directions before any model
   ran**: the reference solution passes, and the specific wrong answer the task
