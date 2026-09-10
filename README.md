@@ -37,7 +37,7 @@ appear in `/v1/models`. API key defaults to `ollama`; override for remote endpoi
 Results land in `results/<runid>/` — `run.json` (machine-readable, everything)
 and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 
-## The suite: 23 tasks, one per real-usage category
+## The suite: 27 tasks, one per real-usage category
 
 | ID | Category | Modeled on | Grading |
 |----|----------|-----------|---------|
@@ -64,9 +64,30 @@ and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 | T21 | email triage | the same call with no examples given | verdict regex |
 | T22 | email triage | a delivery that *does* need you | verdict + specific title |
 | T23 | voice matching | inferring a personal register from examples, not a stated rule | invention + tone + judge |
+| T24 | faithful partial report | three keys to rename, one absent from the file | names the gap, **positively** |
+| T25 | absent-fact discipline | a feature the changelog never mentions | exact `NOT IN CHANGELOG` |
+| T26 | scope discipline | two defects, fix the named one | **executed**; asserts the out-of-scope bug survives |
+| T27 | shared-dependency reasoning | the tempting fix breaks the other caller | **executed**, purely behavioural |
 
 Every task is a small, readable Python file in [`tasks/`](tasks/) — open one, you'll
-get it in thirty seconds. Tasks are single-turn with context embedded in the prompt:
+get it in thirty seconds.
+
+**T24-T27 measure a different thing from T01-T23, and were added because the
+suite saturated.** Choosing a model to head a delegated-agent (subagent) chain,
+four candidates all scored full marks on a real bug-fix task — so the run
+ranked them by latency and price and said nothing about judgement. These four
+target what actually makes a *delegated* agent expensive, none of which a
+latency benchmark can reach: reporting work that did not happen, inventing a
+fact absent from its context, quietly widening its own scope, and editing a
+shared dependency to satisfy a local fix.
+
+Two of them are worth reading for how they are graded, because the obvious
+construction is a trap. "Did not touch the out-of-scope function" is a
+*negated* assertion, satisfied by output that omits the function entirely — so
+T26 instead asserts the exact string the **still-buggy** function produces,
+which is positive evidence it was left alone. T27 makes no text assertion about
+the shared helper at all: a model that edits it fails the *other* caller's
+case, by consequence, in a place the prompt never points at. Tasks are single-turn with context embedded in the prompt:
 fast, deterministic, and fair across models regardless of tool-calling ability.
 
 ## Sample results
@@ -89,6 +110,18 @@ tasks (crash diagnosis, bug-finding); the control lost the code tasks. See
 [`docs/example-report.md`](docs/example-report.md) for the full
 matrix, and [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for what the numbers
 do and don't mean.
+
+**⚠️ That leaderboard is dated, and its one separating result no longer
+reproduces.** Re-tested 2026-09-10: `glm-5.3-flash` **passes T13**, the skill
+authoring task "where every GLM tier failed" a week earlier. Both it and
+`kimi-k2.7-code` scored 1/1. So the 16/16-vs-15/16 gap above is history, not a
+current ranking — either the model moved or that single failure was variance,
+and one task across one run cannot tell you which.
+
+Read every leaderboard here as a dated observation rather than a standing
+verdict, and re-run the tasks that carry your decision. The costs are the
+durable part: the per-M rates in the footer are what made "the fast tier
+matched the heavy tier at 1/10 the cost" true, and they have not moved.
 
 ## Judge mode
 
