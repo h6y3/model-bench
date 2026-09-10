@@ -12,7 +12,7 @@ A full comparison across 3–4 models runs in 10–20 minutes for pennies, produ
 
 ## Why model-bench
 
-- **Tasks mined from real usage.** The 22-task suite was derived from 45 logged coding-agent sessions on an Omarchy Linux system — system diagnosis, config editing, research synthesis, GitHub work, script writing, instruction precision. No riddles, no trivia.
+- **Tasks mined from real usage.** The suite began as 16 tasks derived from 45 logged coding-agent sessions on an Omarchy Linux system — system diagnosis, config editing, research synthesis, GitHub work, script writing, instruction precision. No riddles, no trivia.
 - **Deterministic by default.** Answers are graded by checkers: exact match, substring sets, regex, JSON path assertions, and — for code tasks — the harness *executes* the model's output in a sandbox and checks stdout/exit codes. No vibes.
 - **Optional judge, honestly labeled.** Open-ended tasks can be graded by a rubric judge model. When the judge grades itself, the report badges it (`judge=self`).
 - **Negative-control doctrine.** The suite ships with a weak model (`gemma4:31b:cloud`) that is *expected* to lose. If the control ties your frontier model, the benchmark is too easy — and you'll know.
@@ -21,13 +21,13 @@ A full comparison across 3–4 models runs in 10–20 minutes for pennies, produ
 ## Quick start
 
 ```bash
-git clone <this repo> && cd model-bench
+git clone https://github.com/h6y3/model-bench.git && cd model-bench
 
 python3 bench.py --selftest        # validate all checkers offline, no API calls
-python3 bench.py --list            # show the 16-task suite
+python3 bench.py --list            # print every task id, title and category
 python3 bench.py --judge           # full run: 3 default models + judge
 python3 bench.py --models glm-5.3-flash:cloud --only T02,T04 --judge
-python3 bench.py --baseline 20260903-223427   # diff against a prior run
+python3 bench.py --baseline YYYYMMDD-HHMMSS   # diff against a prior run (ids are the directory names under results/)
 ```
 
 Requires an Ollama endpoint (default `http://127.0.0.1:11434/v1`). Cloud model IDs
@@ -103,7 +103,7 @@ Real run (2026-09-03, judge on, Ollama Cloud). Costs estimated from per-M token 
 | gemma4:31b:cloud (control) | 12/16 | 1.2s | 57 | — |
 
 The leaderboard told a clean story: kimi-k2.7-code was the only model to pass
-all 16 tasks — including T13 skill authoring, where every GLM tier failed;
+all 16 tasks in the suite as it then stood — including T13 skill authoring, where every GLM tier failed;
 the fast GLM tier matched the heavy tier's correctness at 1/10 the cost; the
 cheap backup model (deepseek-v4-flash) lost exactly the reasoning-flavored
 tasks (crash diagnosis, bug-finding); the control lost the code tasks. See

@@ -47,6 +47,35 @@ versioning: [SemVer](https://semver.org/).
   are still true, and they are what made "the fast tier matched the heavy tier
   at 1/10 the cost" correct.
 
+### Fixed
+- README task counts, which had drifted **three ways at once** and all shipped:
+  the suite header said 27, the "why it exists" bullet said 22, and the
+  `--list` comment said 16. Adding tasks means editing the table, and whoever
+  edits the table fixes the number in front of them; nothing checked the rest.
+  The provenance sentence now says the suite *began* as 16 (true, and the 45
+  logged sessions it came from are unchanged), and the `--list` comment
+  describes what the flag prints instead of restating a number that will drift
+  again.
+- README `git clone <this repo>` -- an unexpanded placeholder in the first
+  command a new reader runs. Now the real URL.
+- README `--baseline 20260903-223427` named a run id that does not exist, and
+  `results/` is gitignored so no real id can be quoted and stay true for a
+  fresh clone. Now names the shape and says the ids are the directory names
+  under `results/`.
+- README's dated 2026-09-03 leaderboard said "all 16 tasks", which is correct
+  about that run and reads as a contradiction beside a 27-task suite. Now "all
+  16 tasks in the suite as it then stood".
+- **Two new tests make the README's count earn itself on every run**, because
+  the drift above was invisible to everything: `test_readme_states_the_real_task_count`
+  compares the suite header's `N` against the loaded task count, and
+  `test_readme_table_lists_every_task_exactly_once` compares the table's ids
+  against `tasks/` in order -- so bumping the number without adding a row fails
+  too. Both were verified against broken input before being trusted: a wrong
+  header and a deleted row each fail, naming the offender. `docs/CUSTOMIZING.md`
+  gains the corresponding step and says it is enforced.
+
+### Notes
+
 ### Notes
 - **Every one of the four was validated in BOTH directions before any model
   ran**: the reference solution passes, and the specific wrong answer the task
