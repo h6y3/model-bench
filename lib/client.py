@@ -7,6 +7,10 @@ import urllib.request
 from .checks import strip_think
 
 
+# Recorded in run.json, so a run says what it sent rather than what was assumed.
+DEFAULT_TEMPERATURE = 0.2
+
+
 class ClientError(Exception):
     def __init__(self, kind, detail):
         super().__init__(f"{kind}: {detail}")
@@ -36,7 +40,7 @@ def _parse_response(payload):
 
 
 def chat(base_url, model, messages, *, api_key="ollama", timeout_s=120.0,
-         max_tokens=700, temperature=0.2):
+         max_tokens=700, temperature=DEFAULT_TEMPERATURE):
     url = base_url.rstrip("/") + "/chat/completions"
     body = json.dumps({"model": model, "messages": messages, "max_tokens": max_tokens,
                        "temperature": temperature}).encode()

@@ -8,7 +8,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from lib.client import chat
+from lib.client import DEFAULT_TEMPERATURE, chat
 from lib.checks import run_checks, strip_think
 from lib.judge import judge_task
 from lib.report import est_cost, render_report
@@ -32,6 +32,8 @@ def run_one(model, task, base_url, judge_model, judge_enabled, client):
             "id": tid,
             "passed": all(c["passed"] for c in checks) and bool(checks),
             "truncated": resp.get("finish_reason") == "length",
+            "finish_reason": resp.get("finish_reason"),
+            "max_tokens": task["max_tokens"],
             "checks": checks,
             "latency_s": round(lat, 3),
             "prompt_tokens": resp["usage"]["prompt_tokens"],
@@ -128,6 +130,8 @@ def main(argv=None):
     run = {"runid": runid, "base_url": args.base_url,
            "judge_model": judge_model, "judge_enabled": judge_enabled,
            "models": args.models, "task_titles": {t["id"]: t["title"] for t in tasks},
+           "settings": {"temperature": DEFAULT_TEMPERATURE,
+                        "concurrency": args.concurrency, "only": args.only},
            "results": {}}
 
     for model in args.models:

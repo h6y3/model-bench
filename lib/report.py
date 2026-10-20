@@ -81,8 +81,12 @@ def render_report(run, baseline=None):
                 any_fail = True
             elif not t["passed"]:
                 bad = next((c for c in t["checks"] if not c["passed"]), None)
+                # A starved answer otherwise reads as a content miss.
+                cut = (f" — truncated at max_tokens={t.get('max_tokens', '?')}"
+                       if t.get("truncated") else "")
                 if bad:
-                    lines.append(f"- **{m}** {tid}: {bad['name']} — observed: {bad['observed']}")
+                    lines.append(f"- **{m}** {tid}: {bad['name']} — observed: "
+                                 f"{bad['observed']}{cut}")
                     any_fail = True
     if not any_fail:
         lines.append("- none")

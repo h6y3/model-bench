@@ -10,6 +10,11 @@ versioning: [SemVer](https://semver.org/).
 - Cost rate for `minimax-m3.1-flash:cloud` ($0.15 in / $0.60 out per M
   tokens, from its ollama.com library page on 2026-10-20), so runs that
   include it report spend instead of `n/a (no rate)`.
+- `run.json` records each task's `finish_reason` and `max_tokens`, and a
+  run-level `settings` block (temperature, concurrency, `--only`). Notable
+  failures now say `truncated at max_tokens=N` when the answer was cut off:
+  on 2026-10-20 a model that spent all 4000 tokens reasoning and returned
+  nothing was reported only as "no fenced code block".
 
 ### Fixed
 - T14 and T08 graded phrasing, not correctness. Regrading every stored

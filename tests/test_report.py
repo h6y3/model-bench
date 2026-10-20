@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from lib.report import est_cost, render_report
@@ -57,6 +58,14 @@ class TestReport(unittest.TestCase):
         run["results"] = {"glm-5.3:cloud": RUN["results"]["m-fast"]}
         md = render_report(run)
         self.assertIn("judge=self", md)
+
+    def test_truncated_failure_is_labelled(self):
+        run = json.loads(json.dumps(RUN))
+        t = run["results"]["m-fast"]["tasks"]["T02"]
+        t["truncated"], t["finish_reason"] = True, "length"
+        md = render_report(run)
+        line = next(l for l in md.splitlines() if "**m-fast** T02" in l)
+        self.assertIn("truncated", line)
 
     def test_baseline_delta(self):
         base = dict(RUN)
