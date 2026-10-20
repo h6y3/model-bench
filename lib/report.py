@@ -7,6 +7,7 @@ RATES = {
     "gemma4:31b:cloud": {"in": 0.10, "out": 0.40},  # approximate
     "deepseek-v4-flash:cloud": {"in": 0.22, "out": 0.66},
     "kimi-k2.7-code:cloud": {"in": 0.95, "out": 4.00},
+    "minimax-m3.1-flash:cloud": {"in": 0.15, "out": 0.60},  # ollama.com/library, 2026-10-20
 }
 
 

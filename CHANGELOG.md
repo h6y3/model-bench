@@ -4,6 +4,13 @@ All notable changes to model-bench are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning: [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Cost rate for `minimax-m3.1-flash:cloud` ($0.15 in / $0.60 out per M
+  tokens, from its ollama.com library page on 2026-10-20), so runs that
+  include it report spend instead of `n/a (no rate)`.
+
 ## [0.4.0] - 2026-09-10
 
 ### Added

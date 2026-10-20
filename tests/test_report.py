@@ -40,6 +40,9 @@ class TestCost(unittest.TestCase):
         self.assertAlmostEqual(est_cost("glm-5.3-flash:cloud", 1_000_000, 1_000_000), 0.65)
         self.assertAlmostEqual(est_cost("unknown", 1_000_000, 0), 0.0)
 
+    def test_minimax_m31_flash_rate(self):
+        self.assertAlmostEqual(est_cost("minimax-m3.1-flash:cloud", 1_000_000, 1_000_000), 0.75)
+
 
 class TestReport(unittest.TestCase):
     def test_renders_matrix_and_totals(self):
