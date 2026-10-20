@@ -7,6 +7,13 @@ versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- T28, review a pull request that fixes the bug report and passes CI but
+  crashes on the documented `-rcN` versions. Verdict line plus an executed
+  fix over seven cases, including rc10-vs-rc9. Written to restore code-review
+  discrimination after the T08/T14 regrade, and it did not: every model
+  tested, control included, passed (17/18 across two prompt variants; the
+  one miss was glm-5.3-flash starving at 6000 tokens). Kept as a regression
+  pin for rubber-stamp approvals, not for choosing models. Suite is 28 tasks.
 - Cost rate for `minimax-m3.1-flash:cloud` ($0.15 in / $0.60 out per M
   tokens, from its ollama.com library page on 2026-10-20), so runs that
   include it report spend instead of `n/a (no rate)`.

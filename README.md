@@ -37,7 +37,7 @@ appear in `/v1/models`. API key defaults to `ollama`; override for remote endpoi
 Results land in `results/<runid>/` — `run.json` (machine-readable, everything)
 and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 
-## The suite: 27 tasks, one per real-usage category
+## The suite: 28 tasks, one per real-usage category
 
 | ID | Category | Modeled on | Grading |
 |----|----------|-----------|---------|
@@ -68,6 +68,7 @@ and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 | T25 | absent-fact discipline | a feature the changelog never mentions | exact `NOT IN CHANGELOG` |
 | T26 | scope discipline | two defects, fix the named one | **executed**; asserts the out-of-scope bug survives |
 | T27 | shared-dependency reasoning | the tempting fix breaks the other caller | **executed**, purely behavioural |
+| T28 | PR review | a green PR that fixes the report and breaks the documented contract | verdict + **executed** fix |
 
 Every task is a small, readable Python file in [`tasks/`](tasks/) — open one, you'll
 get it in thirty seconds.
@@ -164,7 +165,7 @@ lib/client.py         OpenAI-compatible chat client (reasoning-aware)
 lib/checks.py         8 deterministic checker types + code execution
 lib/judge.py          strict-JSON rubric judge
 lib/report.py         markdown report renderer + cost rates
-tasks/t01..t23.py     the suite
+tasks/t01..t28.py     the suite
 tests/                47 offline unit/integration tests
 ```
 
