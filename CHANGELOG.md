@@ -11,6 +11,25 @@ versioning: [SemVer](https://semver.org/).
   tokens, from its ollama.com library page on 2026-10-20), so runs that
   include it report spend instead of `n/a (no rate)`.
 
+### Fixed
+- T14 and T08 graded phrasing, not correctness. Regrading every stored
+  answer (30, across all of `results/`) found 10 correct answers scored as
+  failures and none the other way:
+  - **T14** banned the string `omarchy-plugin install`, but the prompt asks
+    why the user's command failed, so a correct answer quotes it. That
+    negated assertion failed every model that quoted it -- including
+    `minimax-m3`'s only miss on 2026-10-08 -- and passed whoever wrote
+    "`install`" alone. Now positive: the full corrected command plus the
+    word "removed".
+  - **T08** required the literal words `range` and `last`; the prompt asks
+    for neither. "Omits the final row" failed, as did answers that never
+    quoted the loop. Now: the bug class (off-by-one, any hyphen including
+    U+2011) and the dropped element (`last` or `final`).
+  - Consequence, stated plainly: every recorded model now passes both, so
+    T08 and T14 no longer separate candidates and the control loses only
+    T09 and T13. Past `report.md` files keep their old grades; `run.json`
+    answers can be regraded.
+
 ## [0.4.0] - 2026-09-10
 
 ### Added

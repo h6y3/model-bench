@@ -2,6 +2,7 @@ import re
 import unittest
 from pathlib import Path
 
+from lib.checks import run_checks
 from tasks import load_tasks
 
 REQUIRED = {"id", "title", "category", "prompt", "checkers", "timeout_s", "max_tokens", "judge"}
@@ -64,6 +65,62 @@ class TestTasks(unittest.TestCase):
         for t in self.tasks:
             for c in t["checkers"]:
                 self.assertIn(c.get("type"), VALID_TYPES, f"{t['id']}: {c}")
+
+    # Graders checked against REAL answers, not just for shape. Both fixtures
+    # below are verbatim minimax-m3.1-flash answers from 2026-10-20 runs that
+    # were correct and scored as failures.
+    def _grade(self, tid, answer):
+        task = next(t for t in self.tasks if t["id"] == tid)
+        return all(c["passed"] for c in run_checks(answer, task["checkers"]))
+
+    # T14 used to ban the string "omarchy-plugin install". The prompt asks WHY
+    # the user's command failed, so a correct answer quotes it -- the ban
+    # failed every model that did (5/5 minimax-m3.1-flash trials, gemma4, and
+    # minimax-m3's only miss on 2026-10-08) and passed whoever happened to
+    # write "`install`" alone. A negated assertion graded phrasing.
+    def test_t14_passes_a_correct_answer_that_quotes_the_failed_command(self):
+        answer = ("```bash\nomarchy-plugin add https://github.com/example/widget.git --enable\n```\n\n"
+                  "The command failed because the legacy `omarchy-plugin install` command was "
+                  "removed in version 2.0. The README specifies `add` followed by the Git URL "
+                  "and `--enable`.")
+        self.assertTrue(self._grade("T14", answer))
+
+    def test_t14_fails_an_answer_that_recommends_install(self):
+        answer = ("Run `omarchy-plugin install --force https://github.com/example/widget.git`; "
+                  "the legacy command was removed in 2.0 and needs --force now.")
+        self.assertFalse(self._grade("T14", answer))
+
+    def test_t14_fails_a_command_without_the_reason(self):
+        answer = "omarchy-plugin add https://github.com/example/widget.git --enable"
+        self.assertFalse(self._grade("T14", answer))
+
+    # T08 required the literal words "range" and "last"; "omits the final
+    # row" is the same finding and failed, as did correct answers that never
+    # quoted the loop.
+    def test_t08_accepts_final_as_well_as_last(self):
+        answer = ("**Bug class:** Off-by-one error.  \n**Effect:** `range(len(rows) - 1)` "
+                  "omits the final row, so the output contains names for only the first "
+                  "`len(rows) - 1` rows.")
+        self.assertTrue(self._grade("T08", answer))
+
+    def test_t08_passes_without_quoting_the_loop(self):
+        answer = ("**Bug Class:** Off-by-one error.\n\n**Effect:** The function fails to "
+                  "process the final element of the `rows` list, resulting in an output "
+                  "list that is missing the last entry.")
+        self.assertTrue(self._grade("T08", answer))
+
+    def test_t08_accepts_non_breaking_hyphens(self):
+        answer = ("**Bug class:** off\u2011by\u2011one iteration error.  \n**Effect:** the loop "
+                  "stops before the last row, so the final entry is omitted.")
+        self.assertTrue(self._grade("T08", answer))
+
+    def test_t08_fails_without_the_bug_class(self):
+        answer = "The loop skips the last row, so one name is missing from the output."
+        self.assertFalse(self._grade("T08", answer))
+
+    def test_t08_fails_when_the_dropped_element_is_not_named(self):
+        answer = "Off-by-one error in `range(len(rows) - 1)`; the output is wrong."
+        self.assertFalse(self._grade("T08", answer))
 
     def test_judge_tasks(self):
         flagged = {t["id"] for t in self.tasks if t.get("judge")}

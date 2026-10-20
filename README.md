@@ -54,7 +54,7 @@ and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 | T11 | dependency reconcile | installed-vs-required versions | JSON assertions |
 | T12 | config-schema diagnosis | silent config rejection | facts + distractors |
 | T13 | skill authoring | YAML frontmatter contracts | structure regex |
-| T14 | install guidance | README-comprehension | facts + banned answers |
+| T14 | install guidance | README-comprehension | exact command + reason |
 | T15 | multi-file consistency | cross-file renames | dual assertions |
 | T16 | log correlation | notifications-vs-service env | facts + judge |
 | T17 | email triage | a shipped-order notice | verdict regex |
@@ -165,7 +165,7 @@ lib/checks.py         8 deterministic checker types + code execution
 lib/judge.py          strict-JSON rubric judge
 lib/report.py         markdown report renderer + cost rates
 tasks/t01..t23.py     the suite
-tests/                36 offline unit/integration tests
+tests/                47 offline unit/integration tests
 ```
 
 Notable engineering details, learned the hard way and documented in
