@@ -36,10 +36,16 @@ Unknown rates render as $0 — the run still works.
 5. Set `judge: true` only if correctness is open-ended and the deterministic
    checks would be too coarse alone.
 6. Leave `max_tokens: 4000+` headroom for reasoning models; the run records
-   `truncated: true` when a model hits the cap.
+   `finish_reason` and `truncated: true` when a model hits the cap, and the
+   report labels such a failure `truncated at max_tokens=N`.
 
 7. **Update the README's suite table and its count in the same change.** Add a
    row to the table under `## The suite: N tasks`, and bump the `N`.
+
+8. **Validate the grader before any model sees it.** Add tests to
+   `tests/test_tasks.py` that grade a reference answer (must pass) and each
+   plausible wrong answer (must fail, each for its own reason) -- T28's tests
+   are the template. A grader nobody has tried on a real answer is a guess.
 
 The loader validates every task at startup (required keys, non-empty prompt and
 checkers) and `tests/test_tasks.py` enforces suite-wide invariants — run
@@ -67,14 +73,25 @@ provenance.
 - Match stems, not exact words (`"fall"` not `"fallback"`).
 - Keep format strictness when the format matters in real use; document why in a
   task comment when it's non-obvious.
-- Add a distractor via `contains_none` when there's a plausible wrong answer you
-  specifically want to fail (e.g. banned "restart the daemon" advice).
+- Prefer positive assertions: test that the required thing is present, not
+  that a wrong thing is absent. A negated check passes output that never
+  engages the subject at all.
+- Use `contains_none` only for a string a correct answer can never contain --
+  never one a correct answer would *quote*. T14 banned `omarchy-plugin
+  install` while asking why that command failed, and for six weeks failed
+  every model that answered by quoting it (fixed 2026-10-20).
+- **Changing an existing checker? Regrade every stored answer** in
+  `results/*/run.json` under the old and new checks, and read each flip before
+  committing. The T08/T14 fix found 10 correct answers scored as failures,
+  and one more (U+2011 hyphens in "off‑by‑one") that only the regrade caught.
 
 ## Interpret results
 
 - `report.md` — pass matrix, per-model totals, notable failures, baseline deltas.
 - `run.json` — everything: per-check pass/fail with observed/expected values,
-  latency, token usage, `truncated` flags, judge scores, answer previews (first
+  latency, token usage, `finish_reason`, `truncated` flags and each task's
+  `max_tokens`, the run's `settings` (temperature, concurrency, `--only`),
+  judge scores, answer previews (first
   4 KB).
 - A universal failure (all models fail one task) is a task bug, not a model
   signal — fix the checker or prompt, then rerun just that task with `--only`.

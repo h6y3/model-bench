@@ -4,7 +4,7 @@ All notable changes to model-bench are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning: [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [0.5.0] - 2026-10-20
 
 ### Added
 - T28, review a pull request that fixes the bug report and passes CI but
@@ -25,8 +25,8 @@ versioning: [SemVer](https://semver.org/).
 
 ### Fixed
 - T14 and T08 graded phrasing, not correctness. Regrading every stored
-  answer (30, across all of `results/`) found 10 correct answers scored as
-  failures and none the other way:
+  answer (30, across the maintainer's local runs) found 10 correct answers
+  scored as failures and none the other way:
   - **T14** banned the string `omarchy-plugin install`, but the prompt asks
     why the user's command failed, so a correct answer quotes it. That
     negated assertion failed every model that quoted it -- including
@@ -39,8 +39,22 @@ versioning: [SemVer](https://semver.org/).
     U+2011) and the dropped element (`last` or `final`).
   - Consequence, stated plainly: every recorded model now passes both, so
     T08 and T14 no longer separate candidates and the control loses only
-    T09 and T13. Past `report.md` files keep their old grades; `run.json`
-    answers can be regraded.
+    T09 and T13. **T08/T14 pass counts from 0.4.0 runs are not comparable
+    with 0.5.0 runs.** Past `report.md` files keep their old grades; the
+    answers stored in `run.json` can be regraded by running the new checks
+    over `answer_preview`.
+
+### Changed
+- Checker authoring rules (`docs/CUSTOMIZING.md`, `docs/METHODOLOGY.md`):
+  prefer positive assertions; never ban a string a correct answer would
+  quote; validate a new grader against reference and wrong answers before
+  any model sees it; regrade every stored answer before changing a checker.
+- `docs/METHODOLOGY.md`: the control's apparent T08/T14 losses are recorded
+  as grader artifacts, and T28 as the second worked example of a universal
+  pass.
+- README: T08, T14 and T28 listed as regression pins; the architecture block
+  no longer states a test count, which had drifted to 36 against 55 real
+  tests with nothing checking it.
 
 ## [0.4.0] - 2026-09-10
 

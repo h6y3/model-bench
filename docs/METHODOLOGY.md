@@ -30,6 +30,18 @@ Design rules the suite follows:
    if pasted. The checker correctly fails it. Instruction adherence is part of
    fitness for coding-agent work.
 
+4. **Never ban what a correct answer would quote.** A negated assertion grades
+   phrasing when the forbidden string belongs in a right answer. T14 asked why
+   `omarchy-plugin install` failed and banned that string; it failed every
+   model that quoted it -- including `minimax-m3`'s only miss in a 27-task run
+   -- and passed whoever wrote "`install`" alone. Assert the required thing
+   positively instead.
+5. **A grader is code; test it on real answers.** Before a task ships, tests
+   pin a reference answer (pass) and plausible wrong ones (fail). Before a
+   checker changes, every stored answer is regraded under both versions and
+   each flip is read. Regrading T08/T14 on 2026-10-20 turned up 10 false
+   failures in 30 stored answers, and zero false passes.
+
 ## The judge (optional)
 
 Open-ended tasks get a 1–5 rubric: correctness 0–2, completeness 0–2,
@@ -46,9 +58,12 @@ the report badges `judge=self`.
 The suite ships a weak model expected to lose (default: `gemma4:31b:cloud`).
 This is a canary for benchmark rigidity: if the control ties a frontier model,
 the suite is too easy — add harder tasks before trusting pass rates. Across this
-repo's real runs the control lost precisely the code-synthesis tasks (bug-finding,
-sed authoring, skill authoring) while matching retrieval/format tasks, which is
-the expected profile for a small generalist.
+repo's real runs the control lost precisely the code-synthesis tasks (sed
+authoring, skill authoring) while matching retrieval/format tasks, which is
+the expected profile for a small generalist. It also appeared to lose
+bug-finding (T08) and install guidance (T14) until 2026-10-20, when both turned
+out to be grader artifacts (design rules 4 and 5): a control's losses are
+evidence only once the grader that produced them has been checked.
 
 ### The mirror: a universal pass
 
@@ -66,6 +81,16 @@ model-limited": the lane failed because nobody had written the rule down, and
 once written, the weak control follows it. Such tasks earn their place as
 regression pins -- they will catch a provider-side update that loses the
 behaviour -- and must not be used to choose between candidates.
+
+T28 is the second worked example, and the one that was *meant* to separate.
+Written on 2026-10-20 to restore code-review discrimination, it hands the
+model a PR that fixes the bug report and passes CI while crashing on versions
+the function's own docstring documents. The control passed 6/6, and so did
+every other model bar one reasoning starvation -- with and without a prompt
+pointing at the docstring. A contract visible in the file under review is
+not hard enough. The finding is about the case, not the models: a reviewer
+task that separates strong models probably needs the contract to live
+somewhere other than the code being reviewed.
 
 ## Reasoning-model behavior (measured findings)
 

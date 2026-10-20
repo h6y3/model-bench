@@ -166,7 +166,7 @@ lib/checks.py         8 deterministic checker types + code execution
 lib/judge.py          strict-JSON rubric judge
 lib/report.py         markdown report renderer + cost rates
 tasks/t01..t28.py     the suite
-tests/                47 offline unit/integration tests
+tests/                offline unit/integration tests (`--selftest`)
 ```
 
 Notable engineering details, learned the hard way and documented in
@@ -187,7 +187,13 @@ Notable engineering details, learned the hard way and documented in
   weak control, and including the two written specifically to be hard. That is
   a result, not a wasted afternoon: the judgement was never model-limited, the
   rule had simply never been written down. Keep such tasks as regression pins;
-  do not use them to choose between candidates.
+  do not use them to choose between candidates. T28, a green-but-wrong PR
+  review written to be hard, joined them on 2026-10-20; so did T08 and T14
+  once their graders were fixed.
+- **A grader is code, and can be wrong.** T14 banned a string that a correct
+  answer quotes, and T08 demanded two words its prompt never asked for. A
+  regrade of every stored answer found 10 correct answers scored as failures.
+  Graders are now tested against reference and wrong answers before shipping.
 
 ## FAQ
 
