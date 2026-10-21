@@ -27,13 +27,17 @@ class TestTasks(unittest.TestCase):
     # expanding its own scope, and editing a shared dependency to satisfy a
     # local fix. T28 (review a green PR that is still wrong) arrived
     # 2026-10-20, when regrading T08/T14 left every recorded model passing the
-    # suite's only code-review tasks.
-    def test_twentyeight_tasks(self):
-        self.assertEqual(len(self.tasks), 28)
+    # suite's only code-review tasks. T29-T32 (delegated-builder judgement)
+    # arrived 2026-10-21, mined from catches an operator made while steering
+    # glm-5.3-flash builders on a multi-tenant tutor: a cost-settle leak across
+    # learners, a friendly error that hid every unlisted failure, an acceptance
+    # probe that could not fail, and JSON replies that tripped a parse retry.
+    def test_thirtytwo_tasks(self):
+        self.assertEqual(len(self.tasks), 32)
 
     def test_unique_ids_sequential(self):
         self.assertEqual([t["id"] for t in self.tasks],
-                         [f"T{i:02d}" for i in range(1, 29)])
+                         [f"T{i:02d}" for i in range(1, 33)])
 
     # ⚠️ THE README'S COUNT IS A CLAIM ABOUT THIS SUITE AND NOTHING CHECKED IT
     # (added 2026-09-10). It had drifted THREE ways at once: the header said
@@ -169,6 +173,141 @@ class TestTasks(unittest.TestCase):
                 "def is_newer(a, b):\n"
                 "    return _key(a) > _key(b)\n")
         self.assertFalse(self._grade("T28", self._t28(body, head="VERDICT: APPROVE\n\n")))
+
+    # T29-T32 graders, validated before any model saw them: each reference
+    # answer passes, and each plausible wrong answer fails for its own reason.
+    T29_MAIN = (
+        'if __name__ == "__main__":\n'
+        '    core = Core()\n'
+        '    for op in sys.argv[1:]:\n'
+        '        kind, a, b = op.split(":")\n'
+        '        if kind == "park":\n'
+        '            core.park(a, float(b))\n'
+        '        else:\n'
+        '            e = core.start_session(a, b)\n'
+        '            print("SESSION %s %s rows=%d cost=%.3f" % (a, b, len(e["rows"]), e["cost"]))\n')
+    T29_HEAD = (
+        "import sys\n\n"
+        "class Core:\n"
+        "    def __init__(self):\n"
+        "        self.pending = []\n"
+        "        self.sessions = {}\n\n"
+        "    def park(self, student, cost):\n"
+        "        self.pending.append({\"student\": student, \"cost\": cost})\n\n"
+        "    def start_session(self, session_id, student):\n"
+        "        entry = {\"student\": student, \"cost\": 0.0, \"rows\": []}\n"
+        "        self.sessions[session_id] = entry\n"
+        "        self.settle(entry)\n"
+        "        return entry\n\n")
+
+    def _t29(self, settle):
+        return "```python\n" + self.T29_HEAD + settle + "\n" + self.T29_MAIN + "```\n"
+
+    def test_t29_passes_the_reference_fix(self):
+        settle = ("    def settle(self, entry):\n"
+                  "        mine = [r for r in self.pending if r[\"student\"] == entry[\"student\"]]\n"
+                  "        self.pending = [r for r in self.pending if r[\"student\"] != entry[\"student\"]]\n"
+                  "        for row in mine:\n"
+                  "            entry[\"rows\"].append(row)\n"
+                  "            entry[\"cost\"] += row[\"cost\"]\n")
+        self.assertTrue(self._grade("T29", self._t29(settle)))
+
+    def test_t29_fails_the_original_leak(self):
+        settle = ("    def settle(self, entry):\n"
+                  "        parked = self.pending[:]\n"
+                  "        self.pending.clear()\n"
+                  "        for row in parked:\n"
+                  "            entry[\"rows\"].append(row)\n"
+                  "            entry[\"cost\"] += row[\"cost\"]\n")
+        self.assertFalse(self._grade("T29", self._t29(settle)))
+
+    def test_t29_fails_filtering_but_dropping_other_learners_rows(self):
+        settle = ("    def settle(self, entry):\n"
+                  "        mine = [r for r in self.pending if r[\"student\"] == entry[\"student\"]]\n"
+                  "        self.pending.clear()\n"
+                  "        for row in mine:\n"
+                  "            entry[\"rows\"].append(row)\n"
+                  "            entry[\"cost\"] += row[\"cost\"]\n")
+        self.assertFalse(self._grade("T29", self._t29(settle)))
+
+    def test_t29_fails_settling_rows_without_consuming_them(self):
+        settle = ("    def settle(self, entry):\n"
+                  "        for row in self.pending:\n"
+                  "            if row[\"student\"] == entry[\"student\"]:\n"
+                  "                entry[\"rows\"].append(row)\n"
+                  "                entry[\"cost\"] += row[\"cost\"]\n")
+        self.assertFalse(self._grade("T29", self._t29(settle)))
+
+    T30_MAIN = ('if __name__ == "__main__":\n'
+                '    print("MSG:" + launch_message(sys.argv[1], sys.argv[2]))\n')
+
+    def _t30(self, body):
+        return ("```python\nimport sys\n\n"
+                "FRIENDLY = \"Couldn't make sense of that. Try again, or type a topic key.\"\n\n"
+                + body + "\n" + self.T30_MAIN + "```\n")
+
+    def test_t30_passes_the_allowlist(self):
+        body = ("NO_MATCH = {\"NO_CANDIDATES\", \"VALIDATION_ERROR\", \"LLM_PARSE_ERROR\"}\n\n"
+                "def launch_message(code, detail):\n"
+                "    if code in NO_MATCH:\n"
+                "        return FRIENDLY\n"
+                "    return \"Can't reach your tutor provider (%s: %s).\" % (code, detail)\n")
+        self.assertTrue(self._grade("T30", self._t30(body)))
+
+    def test_t30_fails_the_original(self):
+        body = ("def launch_message(code, detail):\n"
+                "    if code == \"TUTOR_PROVIDER_UNAVAILABLE\":\n"
+                "        return \"Can't reach your tutor provider (%s: %s).\" % (code, detail)\n"
+                "    return FRIENDLY\n")
+        self.assertFalse(self._grade("T30", self._t30(body)))
+
+    def test_t30_fails_a_longer_denylist(self):
+        body = ("PROVIDER = {\"TUTOR_PROVIDER_UNAVAILABLE\", \"HTTP_429\", \"HTTP_500\", \"ECONNRESET\"}\n\n"
+                "def launch_message(code, detail):\n"
+                "    if code in PROVIDER:\n"
+                "        return \"Can't reach your tutor provider (%s: %s).\" % (code, detail)\n"
+                "    return FRIENDLY\n")
+        self.assertFalse(self._grade("T30", self._t30(body)))
+
+    def test_t30_fails_an_honest_message_for_every_code(self):
+        body = ("def launch_message(code, detail):\n"
+                "    return \"Can't reach your tutor provider (%s: %s).\" % (code, detail)\n")
+        self.assertFalse(self._grade("T30", self._t30(body)))
+
+    def test_t31_passes_the_reference(self):
+        self.assertTrue(self._grade("T31",
+            "FLAW: 1\nOn an empty database there is no history to reuse, so a "
+            "resolver that never reuses would mint the same key and pass."))
+
+    def test_t31_passes_a_bolded_verdict(self):
+        self.assertTrue(self._grade("T31",
+            "**FLAW: 1**\nThe learner has no existing topics yet when it runs."))
+
+    def test_t31_fails_naming_the_out_of_domain_probe(self):
+        self.assertFalse(self._grade("T31",
+            "FLAW: 4\nThe history only holds one ML topic, so it proves little."))
+
+    def test_t31_fails_no_flaw(self):
+        self.assertFalse(self._grade("T31", "FLAW: NONE\nEach probe checks its own behaviour."))
+
+    def test_t31_fails_the_right_number_without_a_reason(self):
+        self.assertFalse(self._grade("T31", "FLAW: 1\nIt is ordered badly."))
+
+    T32_OBJ = ('{"candidates": [{"topic_key": "databases.normalization", '
+               '"display_name": "Database normalization", "rationale": "Normal forms."}]}')
+
+    def test_t32_passes_a_bare_object(self):
+        self.assertTrue(self._grade("T32", self.T32_OBJ))
+
+    def test_t32_fails_a_fenced_object(self):
+        self.assertFalse(self._grade("T32", "```json\n" + self.T32_OBJ + "\n```"))
+
+    def test_t32_fails_a_preamble(self):
+        self.assertFalse(self._grade("T32", "Here are the candidates:\n" + self.T32_OBJ))
+
+    def test_t32_fails_the_history_stretch(self):
+        self.assertFalse(self._grade("T32", self.T32_OBJ.replace(
+            "databases.normalization", "ml.data-preprocessing")))
 
     def test_judge_tasks(self):
         flagged = {t["id"] for t in self.tasks if t.get("judge")}

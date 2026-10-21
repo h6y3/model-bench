@@ -37,7 +37,7 @@ appear in `/v1/models`. API key defaults to `ollama`; override for remote endpoi
 Results land in `results/<runid>/` — `run.json` (machine-readable, everything)
 and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 
-## The suite: 28 tasks, one per real-usage category
+## The suite: 32 tasks, one per real-usage category
 
 | ID | Category | Modeled on | Grading |
 |----|----------|-----------|---------|
@@ -69,6 +69,10 @@ and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 | T26 | scope discipline | two defects, fix the named one | **executed**; asserts the out-of-scope bug survives |
 | T27 | shared-dependency reasoning | the tempting fix breaks the other caller | **executed**, purely behavioural |
 | T28 | PR review | a green PR that fixes the report and breaks the documented contract | verdict + **executed** fix |
+| T29 | tenant isolation | a cost queue that settles into whoever starts next | **executed**; other learners' rows must survive |
+| T30 | error classification | a friendly error that hid an expired key | **executed** with codes the prompt never names |
+| T31 | test validity | an acceptance probe that cannot fail | verdict line + named reason |
+| T32 | strict output | a JSON reply that tripped a parse retry | full-reply match + content assert |
 
 Every task is a small, readable Python file in [`tasks/`](tasks/) — open one, you'll
 get it in thirty seconds.
@@ -90,6 +94,15 @@ which is positive evidence it was left alone. T27 makes no text assertion about
 the shared helper at all: a model that edits it fails the *other* caller's
 case, by consequence, in a place the prompt never points at. Tasks are single-turn with context embedded in the prompt:
 fast, deterministic, and fair across models regardless of tool-calling ability.
+
+**T29-T32 are mined from a different workload:** an operator steering
+glm-5.3-flash builders on a multi-tenant tutoring app (2026-10-21). Each is a
+catch a reviewer made that no failing test pointed at: a cost queue that
+settled one learner's spend into another's session, a friendly error that
+swallowed every failure nobody had listed, an acceptance probe ordered so it
+could not fail, and JSON replies wrapped in prose that made every new topic pay
+for a parse retry. T32 matters for price as much as quality: under per-token
+billing a model that needs the retry costs double on that call.
 
 ## Sample results
 
