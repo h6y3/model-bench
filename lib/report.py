@@ -8,6 +8,7 @@ RATES = {
     "deepseek-v4-flash:cloud": {"in": 0.22, "out": 0.66},
     "kimi-k2.7-code:cloud": {"in": 0.95, "out": 4.00},
     "minimax-m3.1-flash:cloud": {"in": 0.15, "out": 0.60},  # ollama.com/library, 2026-10-20
+    "deepseek-v4.1-flash:cloud": {"in": 0.30, "out": 1.20},  # ollama.com/pricing peak rate, 2026-10-21; off-peak is half
 }
 
 
