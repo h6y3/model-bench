@@ -100,8 +100,9 @@ glm-5.3-flash builders on a multi-tenant tutoring app (2026-10-21). Each is a
 catch a reviewer made that no failing test pointed at: a cost queue that
 settled one learner's spend into another's session, a friendly error that
 swallowed every failure nobody had listed, an acceptance probe ordered so it
-could not fail, and JSON replies wrapped in prose that made every new topic pay
-for a parse retry. T32 matters for price as much as quality: under per-token
+could not fail. T32 comes from the app itself rather than the builders: its
+topic resolver's model often wrapped its JSON so the first parse failed, and
+every new topic paid for a retry. T32 matters for price as much as quality: under per-token
 billing a model that needs the retry costs double on that call.
 
 **All four measured as universal passes** on their first day (2026-10-21:
