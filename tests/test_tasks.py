@@ -317,6 +317,19 @@ class TestTasks(unittest.TestCase):
         self.assertFalse(self._grade("T32", self.T32_OBJ.replace(
             "databases.normalization", "ml.data-preprocessing")))
 
+    # T16 used to ban "restart dunst"; a correct answer that repeats the
+    # prompt's warning failed. Graded positively now.
+    def test_t16_passes_quoting_the_warning(self):
+        self.assertTrue(self._grade("T16",
+            "Root cause: the pi-agent service has no DISPLAY in its environment, so "
+            "the hook takes the else branch. Fix: run systemctl --user "
+            "import-environment DISPLAY WAYLAND_DISPLAY and restart pi-agent. "
+            "Do not restart dunst."))
+
+    def test_t16_fails_blaming_dunst(self):
+        self.assertFalse(self._grade("T16",
+            "The display server is fine; dunst has crashed. Restart dunst."))
+
     def test_judge_tasks(self):
         flagged = {t["id"] for t in self.tasks if t.get("judge")}
         self.assertEqual(flagged, {"T06", "T08", "T10", "T16", "T23"})

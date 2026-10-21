@@ -16,7 +16,12 @@ TASK = {
                "Manual dunst restarts are NOT the fix.\n\n" + LOGS),
     "checkers": [
         {"type": "contains_all", "values": ["display"]},
-        {"type": "contains_none", "values": ["restart dunst", "reinstall dunst"]},
+        # The fix must be about the service's environment. This replaced a ban
+        # on "restart dunst", which failed correct answers that quote the
+        # prompt's own warning ("Do not restart dunst"), the T14 trap again
+        # (deepseek-v4.1-flash, 2026-10-21).
+        {"type": "regex", "search": True, "case_insensitive": True,
+         "pattern": r"(import-environment|environment|\benv\b|Environment=)"},
         {"type": "length_max", "words": 130},
     ],
     "timeout_s": 180,
