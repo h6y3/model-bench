@@ -104,6 +104,13 @@ could not fail, and JSON replies wrapped in prose that made every new topic pay
 for a parse retry. T32 matters for price as much as quality: under per-token
 billing a model that needs the retry costs double on that call.
 
+**All four measured as universal passes** on their first day (2026-10-21:
+glm-5.3-flash, deepseek-v4.1-flash and the gemma4 control, three runs each).
+Posed alone and single-turn, these catches are easy; the builders missed them
+deep inside long sessions. They stay as regression pins. Separating models on
+this kind of judgement probably needs multi-turn tasks with the relevant fact
+buried in a large context.
+
 ## Sample results
 
 Real run (2026-09-03, judge on, Ollama Cloud). Costs estimated from per-M token rates:

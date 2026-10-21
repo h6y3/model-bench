@@ -10,6 +10,12 @@ seeding step before the run.
 The other probes are sound, and probe 4 deliberately looks like the risky one.
 Graded positively: the first line names probe 1, and the reason has to touch
 the missing history.
+
+MEASURED A UNIVERSAL PASS -- A REGRESSION PIN, NOT A DISCRIMINATOR.
+2026-10-21, glm-5.3-flash / deepseek-v4.1-flash / gemma4:31b (control), three
+runs each: every model passed. The catch was hard for a builder deep in a long
+session; posed alone and single-turn it is easy. Keep it to catch a model that
+starts failing it; do not choose between candidates on it.
 """
 PLAN = '''Acceptance plan, run in order against ONE learner on a fresh, empty database:
 

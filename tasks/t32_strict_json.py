@@ -5,7 +5,10 @@ resolver passes the model's reply straight to a JSON parser. In live runs the
 first reply for a new topic routinely failed to parse, so every new topic paid
 for a retry: twice the cost and twice the wait. A model that wraps the object
 in a fence or a sentence of preamble is the expensive one here, however good
-the content is.
+the content is. Measured 2026-10-21 it is a universal pass (glm-5.3-flash,
+deepseek-v4.1-flash and the gemma4 control all replied with a bare object, three
+runs each): a regression pin, not a discriminator. The production retries were
+from a different model.
 
 The format check is a full match over the whole reply, on purpose; the
 content check uses the lenient extractor so a fenced but correct answer fails
@@ -29,9 +32,16 @@ TASK = {
         "it, makes the parse fail."),
     "checkers": [
         {"type": "regex", "pattern": r"(?s)\s*\{.*\}\s*"},
+        # The subject, not one spelling of the domain: db.normalization and
+        # databases.normal-forms are both right (glm-5.3-flash and gemma4 wrote
+        # db.* on 2026-10-21 and an earlier "databas" stem failed them).
         {"type": "json_asserts", "asserts": [
-            {"path": "candidates.0.topic_key", "op": "contains", "value": "databas"},
+            {"path": "candidates.0.topic_key", "op": "contains", "value": "normal"},
         ]},
+        # The first topic_key in the reply must sit in a database domain, which
+        # rules out stretching the history key ml.data-preprocessing.
+        {"type": "regex", "search": True,
+         "pattern": r'"topic_key"\s*:\s*"(db|databases?|data-?bases?|rdbms|sql|relational[a-z-]*)\.'},
     ],
     "timeout_s": 120,
     "max_tokens": 3000,

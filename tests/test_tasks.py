@@ -299,6 +299,14 @@ class TestTasks(unittest.TestCase):
     def test_t32_passes_a_bare_object(self):
         self.assertTrue(self._grade("T32", self.T32_OBJ))
 
+    def test_t32_passes_a_db_domain(self):
+        self.assertTrue(self._grade("T32", self.T32_OBJ.replace(
+            "databases.normalization", "db.normalization-forms")))
+
+    def test_t32_fails_a_feature_scaling_key(self):
+        self.assertFalse(self._grade("T32", self.T32_OBJ.replace(
+            "databases.normalization", "ml.normalization")))
+
     def test_t32_fails_a_fenced_object(self):
         self.assertFalse(self._grade("T32", "```json\n" + self.T32_OBJ + "\n```"))
 

@@ -10,6 +10,12 @@ The tempting fix extends the special case with more provider codes. Cases 2
 and 3 use codes the prompt never names, so only a fix that inverts the rule
 (friendly for the three named no-match codes, honest for everything else)
 passes. Case 0 is the control that a genuine no-match stays friendly.
+
+MEASURED A UNIVERSAL PASS -- A REGRESSION PIN, NOT A DISCRIMINATOR.
+2026-10-21, glm-5.3-flash / deepseek-v4.1-flash / gemma4:31b (control), three
+runs each: every model passed. The catch was hard for a builder deep in a long
+session; posed alone and single-turn it is easy. Keep it to catch a model that
+starts failing it; do not choose between candidates on it.
 """
 SOURCE = '''import sys
 

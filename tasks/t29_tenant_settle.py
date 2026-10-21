@@ -11,6 +11,12 @@ Graded by execution, positively. Case 0 is the discriminator: B starts first,
 so a fix that filters by student but clears the whole queue loses A's rows,
 and A's session then reports rows=0 instead of rows=2. Case 1 is the control
 that a learner's later session gets nothing twice.
+
+MEASURED A UNIVERSAL PASS -- A REGRESSION PIN, NOT A DISCRIMINATOR.
+2026-10-21, glm-5.3-flash / deepseek-v4.1-flash / gemma4:31b (control), three
+runs each: every model passed. The catch was hard for a builder deep in a long
+session; posed alone and single-turn it is easy. Keep it to catch a model that
+starts failing it; do not choose between candidates on it.
 """
 SOURCE = '''import sys
 
