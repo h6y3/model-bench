@@ -114,6 +114,12 @@ buried in a large context.
 
 ## Sample results
 
+**Latest: Qwen3.8 Flash via OpenRouter vs glm-5.3-flash (2026-11-25), 32 tasks,
+3 repeats.** glm-5.3-flash 31.0, Qwen through Alibaba 30.33, Qwen's open FP8
+weights through Featherless 29.67. Qwen lost by reasoning until it hit
+`max_tokens`, most clearly on T29, a former universal pass that it failed in
+all six runs. Write-up: [docs/2026-11-25-qwen3.8-flash-openrouter.md](docs/2026-11-25-qwen3.8-flash-openrouter.md).
+
 Real run (2026-09-03, judge on, Ollama Cloud). Costs estimated from per-M token rates:
 
 | model | pass | avg latency | tok/s | run cost |

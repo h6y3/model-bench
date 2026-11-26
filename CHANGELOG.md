@@ -4,6 +4,15 @@ All notable changes to model-bench are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning: [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Results for `qwen/qwen3.8-flash` through OpenRouter (Alibaba first party and
+  Featherless FP8 open weights) against glm-5.3-flash, 32 tasks with 3 repeats:
+  `docs/2026-11-25-qwen3.8-flash-openrouter.md`. glm-5.3-flash 31.0,
+  Qwen 30.33 and 29.67. T29, recorded as a universal pass, failed every Qwen
+  run because reasoning ran out the 4000-token budget.
+
 ## [0.5.0] - 2026-10-20
 
 ### Added
