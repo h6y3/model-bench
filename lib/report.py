@@ -1,4 +1,5 @@
 """Markdown report rendering. Stdlib only."""
+import json
 from datetime import datetime, timezone
 
 RATES = {
@@ -8,6 +9,7 @@ RATES = {
     "deepseek-v4-flash:cloud": {"in": 0.22, "out": 0.66},
     "kimi-k2.7-code:cloud": {"in": 0.95, "out": 4.00},
     "minimax-m3.1-flash:cloud": {"in": 0.15, "out": 0.60},  # ollama.com/library, 2026-10-20
+    "qwen/qwen3.8-flash": {"in": 0.15, "out": 0.47},  # openrouter.ai, 2026-11-25
     "deepseek-v4.1-flash:cloud": {"in": 0.30, "out": 1.20},  # ollama.com/pricing peak rate, 2026-10-21; off-peak is half
 }
 
@@ -62,8 +64,10 @@ def render_report(run, baseline=None):
         tps_vals = [t["tokens_per_s"] for t in tasks.values() if t["tokens_per_s"]]
         tps = sum(tps_vals) / max(len(tps_vals), 1)
         cost = sum(t["est_cost"] for t in tasks.values())
+        billed = any(t.get("cost_source") == "billed" for t in tasks.values())
         known_rate = m in RATES
-        cost_cell = f"${cost:.4f}" if known_rate else "n/a (no rate)"
+        cost_cell = (f"${cost:.4f}" + (" billed" if billed else "")
+                     if billed or known_rate else "n/a (no rate)")
         scores = [t["judge"]["score"] for t in tasks.values()
                   if t.get("judge") and t["judge"].get("score") is not None]
         javg = f"{sum(scores) / len(scores):.1f}" if scores else "—"
@@ -71,6 +75,23 @@ def render_report(run, baseline=None):
         lines.append(f"| {m}{badge} | {passed}/{n} | {avg_lat:.2f} | {tps:.1f} | "
                      f"{cost_cell} | {javg} |")
     lines.append("")
+    # Served by: only when the endpoint reports it (routers do).
+    served = {}
+    for m in run["models"]:
+        pairs = {(t.get("served_model"), t.get("served_provider"))
+                 for t in run["results"][m]["tasks"].values() if t.get("served_model")}
+        if pairs:
+            served[m] = sorted(f"{sm}" + (f" via {sp}" if sp else "") for sm, sp in pairs)
+    if served:
+        settings = run.get("settings") or {}
+        lines.append("## Served by")
+        lines.append("")
+        if settings.get("provider"):
+            lines.append(f"Provider routing: `{json.dumps(settings['provider'], sort_keys=True)}`")
+            lines.append("")
+        for m, vals in served.items():
+            lines.append(f"- **{m}**: " + ", ".join(f"`{v}`" for v in vals))
+        lines.append("")
     # Notable failures
     lines.append("## Notable failures")
     lines.append("")

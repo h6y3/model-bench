@@ -1,4 +1,4 @@
-"""OpenAI-compatible chat client for Ollama Cloud. Stdlib only."""
+"""OpenAI-compatible chat client (Ollama Cloud, OpenRouter). Stdlib only."""
 import json
 import time
 import urllib.error
@@ -28,6 +28,7 @@ def _parse_response(payload):
     field_reasoning = (msg.get("reasoning") or "").strip()
     parts = [p for p in (field_reasoning, inline_reasoning) if p]
     usage = payload.get("usage") or {}
+    cost = usage.get("cost")
     return {
         "content": content,
         "reasoning": "\n".join(parts),
@@ -36,14 +37,25 @@ def _parse_response(payload):
             "prompt_tokens": usage.get("prompt_tokens", 0),
             "completion_tokens": usage.get("completion_tokens", 0),
         },
+        # What actually answered. A router may serve a different model or
+        # provider than the one asked for; the run records it, never assumes.
+        "served_model": payload.get("model"),
+        "served_provider": payload.get("provider"),
+        # Billed cost when the endpoint reports it (OpenRouter with usage
+        # accounting); None means fall back to the RATES estimate.
+        "cost": float(cost) if isinstance(cost, (int, float)) else None,
     }
 
 
 def chat(base_url, model, messages, *, api_key="ollama", timeout_s=120.0,
-         max_tokens=700, temperature=DEFAULT_TEMPERATURE):
+         max_tokens=700, temperature=DEFAULT_TEMPERATURE, extra_body=None):
+    """extra_body: provider-specific request fields merged into the body, e.g.
+    OpenRouter's {"provider": {...}, "usage": {"include": true}}."""
     url = base_url.rstrip("/") + "/chat/completions"
-    body = json.dumps({"model": model, "messages": messages, "max_tokens": max_tokens,
-                       "temperature": temperature}).encode()
+    payload = {"model": model, "messages": messages, "max_tokens": max_tokens,
+               "temperature": temperature}
+    payload.update(extra_body or {})
+    body = json.dumps(payload).encode()
     req = urllib.request.Request(url, data=body, method="POST", headers={
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",

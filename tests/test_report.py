@@ -74,5 +74,29 @@ class TestReport(unittest.TestCase):
         self.assertIn("baseline", md.lower())
 
 
+
+class TestServedBy(unittest.TestCase):
+    def _run(self, **task_extra):
+        t = {"passed": True, "checks": [], "latency_s": 1.0, "tokens_per_s": 10.0,
+             "est_cost": 0.0005, "prompt_tokens": 100, "completion_tokens": 10,
+             "judge": None, "error": None}
+        t.update(task_extra)
+        return {"runid": "20261125-000000", "judge_model": None, "judge_enabled": False,
+                "models": ["qwen/qwen3.8-flash"], "task_titles": {"T01": "t"},
+                "settings": {"provider": {"only": ["alibaba"]}},
+                "results": {"qwen/qwen3.8-flash": {"tasks": {"T01": t}}}}
+
+    def test_served_section_and_billed_cost(self):
+        md = render_report(self._run(served_model="qwen/qwen3.8-flash",
+                                     served_provider="Alibaba", cost_source="billed"))
+        self.assertIn("## Served by", md)
+        self.assertIn("`qwen/qwen3.8-flash via Alibaba`", md)
+        self.assertIn('"only": ["alibaba"]', md)
+        self.assertIn("$0.0005 billed", md)
+
+    def test_no_served_section_without_router_fields(self):
+        md = render_report(self._run())
+        self.assertNotIn("## Served by", md)
+
 if __name__ == "__main__":
     unittest.main()

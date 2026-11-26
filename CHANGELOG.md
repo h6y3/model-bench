@@ -7,6 +7,17 @@ versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- OpenRouter support. `--openrouter` uses OpenRouter's endpoint, reads the key
+  from `$OPENROUTER_API_KEY`, records each call's billed cost and keeps the
+  judge on local Ollama. `--provider JSON` pins OpenRouter routing,
+  `--api-key-env NAME` reads a key from any variable, and `--judge-base-url`
+  moves the judge. Keys never appear on the command line or in `run.json`; a
+  missing key stops the run before any call.
+- Every task records `served_model` and `served_provider` (what actually
+  answered) and `cost_source` (`billed` or `rate`); the report adds a
+  **Served by** section when the endpoint reports them.
+- Cost rate for `qwen/qwen3.8-flash` ($0.15 in / $0.47 out per M tokens, from
+  OpenRouter on 2026-11-25).
 - Results for `qwen/qwen3.8-flash` through OpenRouter (Alibaba first party and
   Featherless FP8 open weights) against glm-5.3-flash, 32 tasks with 3 repeats:
   `docs/2026-11-25-qwen3.8-flash-openrouter.md`. glm-5.3-flash 31.0,

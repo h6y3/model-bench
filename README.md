@@ -34,6 +34,22 @@ Requires an Ollama endpoint (default `http://127.0.0.1:11434/v1`). Cloud model I
 (`*:cloud`) resolve on demand through Ollama Cloud — including models that do not
 appear in `/v1/models`. API key defaults to `ollama`; override for remote endpoints.
 
+**OpenRouter.** `--openrouter` switches the endpoint to OpenRouter, reads the key
+from `$OPENROUTER_API_KEY` (never from the command line), records the billed cost
+of every call, and keeps the judge on local Ollama:
+
+```bash
+export OPENROUTER_API_KEY=...        # or --api-key-env NAME for another variable
+python3 bench.py --openrouter --models qwen/qwen3.8-flash \
+  --provider '{"only":["alibaba"],"allow_fallbacks":false}' --judge
+```
+
+`--provider` is passed through as OpenRouter's routing object; pin one provider
+and turn fallbacks off, or a single slug can be answered by several backends at
+different precisions. Each task in `run.json` records the model and provider
+that actually answered (`served_model`, `served_provider`), and the report lists
+them under **Served by**. `--judge-base-url` points the judge elsewhere.
+
 Results land in `results/<runid>/` — `run.json` (machine-readable, everything)
 and `report.md` (the comparison). `docs/example-report.md` shows a real one.
 
@@ -175,7 +191,8 @@ that silently regresses your daily driver shows up as a red arrow, not a hunch.
 ## Adding things
 
 - **A model:** `python3 bench.py --models <id>`. Add a cost entry to `RATES` in
-  [`lib/report.py`](lib/report.py) to track spend.
+  [`lib/report.py`](lib/report.py) to track spend (OpenRouter runs report the
+  billed cost and need no entry).
 - **A task:** copy a file in [`tasks/`](tasks/), set a fresh `TXX` id, pick checkers
   from the catalog in [`lib/checks.py`](lib/checks.py), and flip `judge: true` if
   the answer is open-ended. The suite self-validates on load.
